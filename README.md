@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Project Template — 2Sky Labs
 
-## Getting Started
+Starter template for all new projects. Next.js 14 + Supabase + Tailwind + TypeScript.
 
-First, run the development server:
+## Quick Start
+
+### 1. Create new project from this template
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# On GitHub: click "Use this template" → "Create a new repository"
+# Or clone locally:
+git clone https://github.com/2sky-labs/template-starter.git my-project
+cd my-project
+rm -rf .git && git init
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Install dependencies
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+pnpm install
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+### 3. Set up environment
 
-## Learn More
+```bash
+cp .env.example .env.local
+# Fill in your Supabase URL and keys
+```
 
-To learn more about Next.js, take a look at the following resources:
+### 4. Run locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+pnpm dev
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 5. Deploy
 
-## Deploy on Vercel
+Push to GitHub → Vercel auto-deploys from `main`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Scripts
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | Description |
+|---------|-------------|
+| `pnpm dev` | Start dev server |
+| `pnpm build` | Production build |
+| `pnpm lint` | Run ESLint |
+| `pnpm tsc --noEmit` | Type check |
+| `pnpm prettier --write "src/**/*"` | Format code |
+
+## Adding a New Feature
+
+1. Create branch: `git checkout -b feat/feature-name`
+2. Write code following `CLAUDE.md` rules
+3. Check: `pnpm lint && pnpm tsc --noEmit`
+4. Commit: `git commit -m "feat: description"`
+5. Push & create PR
+6. Review Vercel preview
+7. Merge to `main`
