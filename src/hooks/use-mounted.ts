@@ -1,8 +1,10 @@
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
+
+const emptySubscribe = (): (() => void) => () => {};
+const getSnapshot = (): boolean => true;
+const getServerSnapshot = (): boolean => false;
 
 /** Returns true after component mounts. Use to avoid hydration mismatches. */
 export function useMounted(): boolean {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-  return mounted;
+  return useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
 }
