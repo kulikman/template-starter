@@ -86,3 +86,88 @@ Push to GitHub → Vercel auto-deploys from `main`.
 5. Push & create PR
 6. Review Vercel preview
 7. Merge to `main`
+
+---
+
+## Design Advisor Skill
+
+Встроенный скилл для Claude Code. Запускай `/design` перед началом любой UI-работы — получишь цвета, шрифты, структуру страницы и антипаттерны для конкретной отрасли.
+
+### Структура файлов
+
+Папка `.claude` уже включена в этот шаблон:
+
+```
+.claude/
+  skills/
+    design/
+      SKILL.md
+      data/
+        colors.csv        ← отраслевые палитры
+        typography.csv    ← пары шрифтов + Google Fonts URL
+        ui-reasoning.csv  ← паттерны и антипаттерны
+        styles.csv        ← визуальные стили
+        landing.csv       ← структуры лендингов
+        ux-guidelines.csv ← правила UX с кодом
+        charts.csv        ← рекомендации по визуализации
+```
+
+### Использование
+
+```
+/design landing page for eSIM travel product
+/design B2B telecom wholesale platform
+/design MVNO dashboard for partners
+/design fintech portfolio tracker dark mode
+```
+
+### Отраслевые триггеры
+
+| Ключевые слова | Использует строку |
+|---|---|
+| telecom, eSIM, MVNO, wholesale, connectivity | Telecom/eSIM |
+| fintech, crypto, payments, trading | Fintech/Crypto |
+| SaaS, dashboard, B2B platform | SaaS (General) |
+| travel, consumer app | Travel Tech |
+| healthcare, medical | Healthcare App |
+
+### Воркфлоу
+
+```
+/design → рекомендации (цвета, шрифты, структура, антипаттерны)
+       ↓
+/ui    → сгенерировать компонент по спецификации
+       ↓
+       Копировать в проект
+```
+
+### Подключение 21st.dev MCP (опционально)
+
+Даёт Claude доступ к реальным готовым компонентам прямо в ответе `/design`.
+
+В настройках Claude Code → MCP servers добавь:
+
+```json
+{
+  "mcpServers": {
+    "magic": {
+      "command": "npx",
+      "args": ["-y", "@21st-dev/magic@latest"],
+      "env": {
+        "TWENTY_FIRST_API_KEY": "your-api-key"
+      }
+    }
+  }
+}
+```
+
+API ключ: [21st.dev](https://21st.dev)
+
+### Кастомизация
+
+Для добавления новой отрасли — добавь строку в каждый CSV:
+
+1. `colors.csv` — 6 hex-кодов (primary, secondary, cta, background, text, border)
+2. `typography.csv` — пара шрифтов + Google Fonts URL
+3. `ui-reasoning.csv` — паттерны + антипаттерны
+4. `landing.csv` — порядок секций + стратегия CTA
