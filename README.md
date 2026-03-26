@@ -1,12 +1,13 @@
 # Project Template — 2Sky Labs
 
-Starter template for all new projects. Next.js 14 + Supabase + Tailwind + TypeScript.
+Starter template for all new projects.
+**Stack:** Next.js 14 + Supabase + Tailwind + TypeScript + shadcn/ui
+
+---
 
 ## Quick Start
 
-### Scaffold only the folder layout (empty project)
-
-From a **new empty folder** (Git optional), run the initializer using a one-off clone of this repo:
+### Scaffold a new project from this template
 
 ```bash
 cd /path/to/your-new-project
@@ -15,159 +16,189 @@ git clone --depth 1 https://github.com/kulikman/template-starter.git /tmp/templa
   && rm -rf /tmp/template-starter-init
 ```
 
-If you already have this template checked out elsewhere, point the script at it:
+Or if you have the template checked out:
 
 ```bash
 export TEMPLATE_STARTER_ROOT=/path/to/template-starter
 bash "$TEMPLATE_STARTER_ROOT/scripts/init-project-structure.sh" --force .
 ```
 
-In Cursor / VS Code: open an **empty** project folder, copy `scripts/init-project-structure.sh` from this template (or open a workspace that already includes it), then **Tasks → Run Task → Init project structure (CLAUDE.md layout)**.
-
-From a checkout of this repo you can run the script via pnpm **with an explicit target directory** (the package root is used as cwd, so a bare run would target the template itself):
-
-```bash
-pnpm init:structure -- /path/to/empty-project
-pnpm init:structure -- --force /path/to/non-empty-project
-```
-
-It refuses non-empty targets unless you pass `--force` before the path (as above) or run `bash scripts/init-project-structure.sh --force /path/to/project` directly.
-
-### 1. Create new project from this template
-
-```bash
-# On GitHub: click "Use this template" → "Create a new repository"
-# Or clone locally:
-git clone https://github.com/2sky-labs/template-starter.git my-project
-cd my-project
-rm -rf .git && git init
-```
-
-### 2. Install dependencies
+### Setup steps
 
 ```bash
 pnpm install
-```
-
-### 3. Set up environment
-
-```bash
-cp .env.example .env.local
-# Fill in your Supabase URL and keys
-```
-
-### 4. Run locally
-
-```bash
+cp .env.example .env.local   # fill in Supabase URL and keys
 pnpm dev
 ```
 
-### 5. Deploy
-
 Push to GitHub → Vercel auto-deploys from `main`.
+
+---
+
+## Project Structure
+
+```
+.
+├── src/
+│   ├── app/              # Next.js App Router pages
+│   │   ├── (auth)/       # Auth routes (login, signup)
+│   │   ├── (dashboard)/  # Protected routes
+│   │   └── api/          # API routes
+│   ├── components/
+│   │   ├── ui/           # shadcn/ui primitives
+│   │   ├── forms/        # Form components
+│   │   ├── layout/       # Header, Footer, Sidebar
+│   │   └── [feature]/    # Feature-specific components
+│   ├── lib/
+│   │   ├── supabase/     # Supabase clients (browser, server, admin)
+│   │   ├── utils.ts      # Utilities
+│   │   ├── constants.ts  # App-wide constants
+│   │   └── validations.ts # Zod schemas
+│   ├── hooks/            # Custom React hooks
+│   ├── types/            # TypeScript type definitions
+│   ├── styles/           # Global CSS
+│   └── config/           # Site metadata, nav config
+│
+├── .claude/              # AI agent configuration
+│   ├── memory/           # Persistent session memory
+│   │   ├── project-state.md  ← Claude reads this every session
+│   │   ├── decisions.md      ← Architectural decisions log
+│   │   └── patterns.md       ← Established patterns
+│   ├── skills/           # Slash command skills
+│   │   ├── design/       # /design — UI advisor
+│   │   ├── architect/    # /architect — system design
+│   │   ├── memory/       # /memory — session state
+│   │   └── review/       # /review — code quality check
+│   └── instincts.md      # Architectural decision rules
+│
+├── .cursor/rules/        # Cursor AI rules (mirrors CLAUDE.md)
+├── .github/workflows/    # CI/CD (type check, lint, security scan)
+├── .vscode/              # VS Code settings
+│
+├── CLAUDE.md             # Claude Code instructions (primary AI config)
+├── AGENTS.md             # OpenAI Codex / other agent instructions
+└── scripts/
+    └── init-project-structure.sh
+```
+
+---
+
+## AI Agent System
+
+This template includes a full AI agent harness — not just configuration files.
+
+### How it works
+
+**CLAUDE.md** is read by Claude Code at the start of every session. It defines:
+- The tech stack and project structure
+- Code rules and prohibitions
+- **Decision rules** — how to make architectural choices, not just code style
+- **Memory protocol** — how to persist context between sessions
+- **Available slash commands**
+
+**.claude/memory/** persists project context between sessions:
+- Claude reads `project-state.md` at session start
+- Claude updates memory files when you run `/memory update`
+- Architectural decisions never get re-debated
+
+**.claude/instincts.md** defines architectural decision rules:
+- Component vs Hook vs Utility
+- Server vs Client data fetching
+- API Route vs Edge Function
+- 2Sky Labs domain-specific patterns (telecom, fintech, B2B)
+
+### Slash Commands
+
+| Command | Purpose |
+|---------|---------|
+| `/design [context]` | UI advisor — industry-specific colors, fonts, layouts |
+| `/architect [feature]` | System design — data model, API, component tree, RLS |
+| `/memory update` | Save current session state to `.claude/memory/` |
+| `/memory show` | Display current project context |
+| `/review [file]` | Code quality check against all project rules |
+
+### Multi-tool Support
+
+The same project rules are available to multiple AI tools:
+- **Claude Code** → reads `CLAUDE.md`
+- **Cursor** → reads `.cursor/rules/project.mdc`
+- **Codex / OpenCode** → reads `AGENTS.md`
+
+---
+
+## Design Skill
+
+The `/design` skill provides industry-specific UI recommendations:
+
+```
+/design landing page for eSIM travel product
+/design B2B telecom wholesale platform dashboard
+/design MVNO partner portal
+/design fintech portfolio tracker dark mode
+```
+
+Data files in `.claude/skills/design/data/`:
+- `colors.csv` — industry color palettes
+- `typography.csv` — font pairs + Google Fonts URLs
+- `ui-reasoning.csv` — patterns and anti-patterns
+- `landing.csv` — section structures and CTA strategies
+- `ux-guidelines.csv` — UX rules with code examples
+
+---
 
 ## Scripts
 
 | Command | Description |
 |---------|-------------|
-| `pnpm init:structure -- <dir>` | Same as the shell script; pass the folder to scaffold (see above) |
+| `pnpm init:structure -- <dir>` | Scaffold folder layout in target directory |
 | `pnpm dev` | Start dev server |
 | `pnpm build` | Production build |
 | `pnpm lint` | Run ESLint |
 | `pnpm tsc --noEmit` | Type check |
 | `pnpm prettier --write "src/**/*"` | Format code |
 
+---
+
 ## Adding a New Feature
 
-1. Create branch: `git checkout -b feat/feature-name`
-2. Write code following `CLAUDE.md` rules
-3. Check: `pnpm lint && pnpm tsc --noEmit`
-4. Commit: `git commit -m "feat: description"`
-5. Push & create PR
-6. Review Vercel preview
-7. Merge to `main`
+1. Run `/architect [feature name]` — get data model, API design, component plan
+2. Create branch: `git checkout -b feat/feature-name`
+3. Write migrations first, then RLS, then API, then UI
+4. Check: `pnpm lint && pnpm tsc --noEmit`
+5. Commit: `git commit -m "feat: description"`
+6. Push & create PR → review Vercel preview
+7. Run `/memory update` to save session state
+8. Merge to `main`
 
 ---
 
-## Design Advisor Skill
+## Environment Variables
 
-Встроенный скилл для Claude Code. Запускай `/design` перед началом любой UI-работы — получишь цвета, шрифты, структуру страницы и антипаттерны для конкретной отрасли.
+```bash
+# Required
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=     # Server-only, never NEXT_PUBLIC_
 
-### Структура файлов
-
-Папка `.claude` уже включена в этот шаблон:
-
-```
-.claude/
-  skills/
-    design/
-      SKILL.md
-      data/
-        colors.csv        ← отраслевые палитры
-        typography.csv    ← пары шрифтов + Google Fonts URL
-        ui-reasoning.csv  ← паттерны и антипаттерны
-        styles.csv        ← визуальные стили
-        landing.csv       ← структуры лендингов
-        ux-guidelines.csv ← правила UX с кодом
-        charts.csv        ← рекомендации по визуализации
+# Optional
+NEXT_PUBLIC_SITE_URL=
 ```
 
-### Использование
+---
 
-```
-/design landing page for eSIM travel product
-/design B2B telecom wholesale platform
-/design MVNO dashboard for partners
-/design fintech portfolio tracker dark mode
-```
+## CI/CD
 
-### Отраслевые триггеры
+`.github/workflows/quality-check.yml` runs on every PR:
+- TypeScript type check (`pnpm tsc --noEmit`)
+- ESLint (`pnpm lint`)
+- Security scan (hardcoded secrets, `any` types, `console.log`)
+- Build check
 
-| Ключевые слова | Использует строку |
-|---|---|
-| telecom, eSIM, MVNO, wholesale, connectivity | Telecom/eSIM |
-| fintech, crypto, payments, trading | Fintech/Crypto |
-| SaaS, dashboard, B2B platform | SaaS (General) |
-| travel, consumer app | Travel Tech |
-| healthcare, medical | Healthcare App |
+All checks must pass before merging to `main`.
 
-### Воркфлоу
+---
 
-```
-/design → рекомендации (цвета, шрифты, структура, антипаттерны)
-       ↓
-/ui    → сгенерировать компонент по спецификации
-       ↓
-       Копировать в проект
-```
+## About
 
-### Подключение 21st.dev MCP (опционально)
-
-Даёт Claude доступ к реальным готовым компонентам прямо в ответе `/design`.
-
-В настройках Claude Code → MCP servers добавь:
-
-```json
-{
-  "mcpServers": {
-    "magic": {
-      "command": "npx",
-      "args": ["-y", "@21st-dev/magic@latest"],
-      "env": {
-        "TWENTY_FIRST_API_KEY": "your-api-key"
-      }
-    }
-  }
-}
-```
-
-API ключ: [21st.dev](https://21st.dev)
-
-### Кастомизация
-
-Для добавления новой отрасли — добавь строку в каждый CSV:
-
-1. `colors.csv` — 6 hex-кодов (primary, secondary, cta, background, text, border)
-2. `typography.csv` — пара шрифтов + Google Fonts URL
-3. `ui-reasoning.csv` — паттерны + антипаттерны
-4. `landing.csv` — порядок секций + стратегия CTA
+Template maintained by [2Sky Labs](https://2sky.io).
+Used across: 2SkyMobile, NeoSIM, and 2Sky Ventures projects.

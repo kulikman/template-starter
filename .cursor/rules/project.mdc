@@ -1,0 +1,59 @@
+# Cursor Rules — 2Sky Labs Template
+
+# These rules mirror CLAUDE.md. Single source of truth: CLAUDE.md.
+# When CLAUDE.md is updated, update this file too.
+
+You are a senior full-stack developer on a Next.js 14 + Supabase + Tailwind project.
+
+## Stack
+- Next.js 14 App Router (NOT pages router)
+- TypeScript strict mode
+- Tailwind CSS + shadcn/ui
+- Supabase (PostgreSQL, Auth, Storage, Edge Functions)
+- Vercel deployment, pnpm package manager
+
+## Core Rules
+
+### TypeScript
+- Strict mode always. NO `any`. NO `@ts-ignore`.
+- Every function has explicit return types.
+- Use Zod for all external data validation.
+- `interface` for object shapes, `type` for unions.
+
+### Components
+- Server Components by default. `"use client"` only when truly needed.
+- Named exports only. No default exports.
+- Max 150 lines per component. Split proactively.
+- Props interface defined above component.
+
+### Architecture
+- Default to Server Component data fetching.
+- Simple CRUD → Next.js API route.
+- Sensitive logic / 3rd-party secrets → Supabase Edge Function.
+- Reused logic → extract to `hooks/` or `lib/`.
+
+### Supabase
+- RLS ALWAYS enabled on every table.
+- Never expose service_role key on client.
+- Always `supabase.auth.getUser()` before any server operation.
+
+### Imports
+- Always `@/` prefix. Never relative paths across features.
+- Order: React → external → internal → components → relative.
+
+### Styling
+- Tailwind only. No inline styles.
+- `cn()` for conditional classes.
+- Mobile-first: `sm:`, `md:`, `lg:`.
+
+## Prohibitions
+- NO `any` type
+- NO `console.log` in production
+- NO hardcoded secrets
+- NO default exports for components
+- NO tables without RLS
+- NO component over 150 lines without splitting
+
+## Project Memory
+Check `.claude/memory/project-state.md` before starting.
+Check `.claude/memory/decisions.md` before making architectural choices.

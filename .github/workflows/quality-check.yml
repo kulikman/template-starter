@@ -1,0 +1,119 @@
+name: Security & Quality Check
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  type-check:
+    name: TypeScript
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm tsc --noEmit
+
+  lint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+
+  security-scan:
+    name: Security Scan
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Scan for hardcoded secrets
+      - name: Check for hardcoded secrets
+        run: |
+          echo "Scanning for hardcoded secrets..."
+          
+          # Patterns that indicate hardcoded secrets
+          PATTERNS=(
+            "supabase_service_role_key\s*=\s*['\"]ey"
+            "NEXT_PUBLIC.*SERVICE_ROLE"
+            "sk-[a-zA-Z0-9]{20,}"
+            "password\s*=\s*['\"][^'\"]{8,}['\"]"
+          )
+          
+          FOUND=0
+          for pattern in "${PATTERNS[@]}"; do
+            if grep -rE "$pattern" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+              echo "⚠️  Potential hardcoded secret found matching: $pattern"
+              FOUND=1
+            fi
+          done
+          
+          if [ $FOUND -eq 1 ]; then
+            echo "❌ Security scan failed: hardcoded secrets detected"
+            exit 1
+          fi
+          
+          echo "✅ No hardcoded secrets found"
+
+      # Scan for console.log in production code
+      - name: Check for console.log
+        run: |
+          echo "Scanning for console.log statements..."
+          
+          if grep -rn "console\.log" src/ --include="*.ts" --include="*.tsx" 2>/dev/null; then
+            echo "⚠️  console.log found in source. Remove before production."
+            # Warning only, not a blocking failure
+          else
+            echo "✅ No console.log found"
+          fi
+
+      # Check for any type usage
+      - name: Check for 'any' type
+        run: |
+          echo "Scanning for 'any' type usage..."
+          
+          ANY_COUNT=$(grep -rn ": any" src/ --include="*.ts" --include="*.tsx" 2>/dev/null | wc -l)
+          
+          if [ "$ANY_COUNT" -gt 0 ]; then
+            grep -rn ": any" src/ --include="*.ts" --include="*.tsx"
+            echo "❌ Found $ANY_COUNT instances of 'any' type. Use 'unknown' and narrow."
+            exit 1
+          fi
+          
+          echo "✅ No 'any' type found"
+
+  build:
+    name: Build Check
+    runs-on: ubuntu-latest
+    needs: [type-check, lint]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 8
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+        env:
+          # Use placeholder values for build check
+          NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co
+          NEXT_PUBLIC_SUPABASE_ANON_KEY: placeholder_anon_key
