@@ -1,4 +1,4 @@
-export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "App";
+export const APP_NAME = process.env.NEXT_PUBLIC_APP_NAME || "2SkyMobile CRM";
 
 export const ROUTES = {
   home: "/",
