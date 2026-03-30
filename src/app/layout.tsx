@@ -13,8 +13,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "2SkyMobile CRM",
-  description: "CRM platform for 2SkyMobile team and B2B operations.",
+  title: "Template Starter",
+  description:
+    "Next.js App Router, TypeScript, Tailwind, Supabase — clone and customize.",
 };
 
 export default function RootLayout({

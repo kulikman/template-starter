@@ -68,8 +68,8 @@ System design advisor. Given a feature description, output:
 [potential problems to watch for]
 ```
 
-## Domain Context (2Sky Labs)
+## Domain context (examples)
 
-For telecom features: check `.claude/instincts.md` → "2Sky Labs Domain Context"
+For optional domain patterns: see `.claude/instincts.md` → "Example domain patterns"
 For fintech features: amounts in smallest unit, immutable transaction records
 For B2B features: multi-tenant RLS with `organization_id`

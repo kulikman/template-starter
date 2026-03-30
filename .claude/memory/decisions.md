@@ -21,7 +21,7 @@
 ## Decisions
 
 ### [Date] — Initial Setup
-**Context:** Project created from 2Sky Labs template-starter
+**Context:** Project created from template-starter
 **Decision:** Next.js 14 App Router + Supabase + Tailwind + shadcn/ui + Vercel
 **Alternatives Considered:** Remix (less ecosystem), Prisma (redundant with Supabase types)
 **Consequences:** All data fetching in Server Components by default; Edge Functions for sensitive ops

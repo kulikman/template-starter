@@ -9,7 +9,7 @@
 ## Current Session
 
 **Last Updated:** [fill in date]
-**Project:** [project name — e.g. NeoSIM, 2SkyMobile Dashboard, etc.]
+**Project:** [your product name after forking this template]
 **Current Feature:** [what's being built right now]
 **Status:** `not started` | `in progress` | `blocked` | `done`
 

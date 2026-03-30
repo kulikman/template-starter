@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # init-project-structure.sh
-# Scaffolds the full project structure for a new 2Sky Labs project.
+# Scaffolds the full project structure for a new project from this template.
 # Usage: bash scripts/init-project-structure.sh [--force] <target-dir>
 # From pnpm: pnpm init:structure -- [--force] <target-dir>
 

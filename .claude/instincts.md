@@ -159,11 +159,11 @@ Form state                       → react-hook-form + Zod
 
 ---
 
-## 2Sky Labs Domain Context
+## Example domain patterns
 
-This template is used across 2Sky Labs projects. Common domain patterns:
+This template is product-agnostic. When you choose a domain, common patterns include:
 
-### Telecom / eSIM projects (2SkyMobile, NeoSIM)
+### Telecom / eSIM
 - User balance is financial data → treat with extra validation
 - Country/operator codes → use ISO standards, store as `VARCHAR(3)`
 - eSIM profiles → immutable once activated, use soft-delete pattern
@@ -174,7 +174,7 @@ This template is used across 2Sky Labs projects. Common domain patterns:
 - Role-based access → store roles in `user_roles` table, check in RLS
 - Partner portal → separate route group `(partner)/` with own layout
 
-### Fintech features (2Sky Ventures)
+### Fintech
 - Financial amounts → store in smallest unit (cents), display formatted
 - Audit trail → add `created_at`, `updated_at`, `created_by` to all tables
 - Transactions → immutable records, never UPDATE, only INSERT

@@ -1,10 +1,11 @@
 export const siteConfig = {
-  name: "2SkyMobile CRM",
-  description: "CRM platform for internal workflows and partner management.",
+  name: "Template Starter",
+  description:
+    "Universal Next.js + Supabase starter — fork and rename for your product.",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ogImage: "/og-image.jpg",
   links: {
-    github: "https://github.com/kulikman/2Skymobile-CRM",
+    github: "https://github.com/kulikman/template-starter",
   },
   nav: [
     { title: "Home", href: "/" },
