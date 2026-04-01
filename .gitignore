@@ -1,6 +1,7 @@
 # Dependencies
 node_modules/
 .pnpm-store/
+.cursor/
 
 # Environment variables (NEVER commit secrets)
 .env
@@ -17,7 +18,7 @@ dist/
 build/
 
 # IDE
-.vscode/settings.json
+.vscode/
 .idea/
 *.swp
 *.swo
