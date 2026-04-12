@@ -1,7 +1,10 @@
 # Dependencies
 node_modules/
 .pnpm-store/
-.cursor/
+# Cursor: track shared agent commands only; keep local IDE state untracked
+.cursor/*
+!.cursor/commands/
+!.cursor/commands/**
 
 # Environment variables (NEVER commit secrets)
 .env
@@ -51,3 +54,4 @@ test-results/
 
 # Misc
 *.log
+!audit/conflicts.log

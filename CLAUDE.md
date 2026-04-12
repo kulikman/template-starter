@@ -73,6 +73,10 @@ src/
 │   ├── memory/           # /memory skill (session state)
 │   └── review/           # /review skill (code quality)
 └── instincts.md          # Decision rules for architecture choices
+
+audit/                    # Audit rules, AUDIT_PROMPT, history (see audit/README.md)
+.cursor/commands/         # Cursor: Run audit, Fix all critical, Show rules
+.cursorrules              # Cursor agent defaults for this repo
 ```
 
 ---
@@ -113,6 +117,351 @@ Before building any new feature, answer:
 * Requirement is ambiguous → ask before writing
 * Schema change would break existing data → ask before migrating
 * Feature requires a new external service → ask before integrating
+
+---
+
+## Design System
+
+> This section defines the visual language of all products in the 2Sky ecosystem.
+> Every UI decision — components, pages, dashboards — must follow these rules.
+> Do not invent visual choices. Reference this section first.
+
+---
+
+### Core Aesthetic
+
+**Style:** Glassmorphism — frosted glass layers, translucency, depth
+**Character:** Premium B2B technology. Dark, precise, confident.
+**Rule:** Never produce a static UI. Every component must have at least one animation or transition.
+**Anti-pattern:** No generic "clean startup" look. No purple gradients on white. No flat card grids without depth.
+
+---
+
+### Design Architecture: Multi-Product System
+
+All products share a **base visual system** (dark background, glassmorphism, Geist typography).
+Each product gets its own **accent color** that defines its identity.
+
+| Product | Accent Primary | Accent Secondary | Character |
+|---------|---------------|-----------------|-----------|
+| 2SkyMobile | `#00D4FF` | `#0099CC` | B2B telecom — precise, technical |
+| NeoSIM | TBD | TBD | Consumer travel — fluid, global |
+| Aurelia | TBD | TBD | Conceptual — cosmic, philosophical |
+| 2Sky Ventures | TBD | TBD | Investment — sharp, confident |
+
+> When building for a specific product, apply that product's accent. Base tokens remain constant.
+
+---
+
+### Color Tokens — 2SkyMobile (Priority Product)
+
+Define these as CSS custom properties in `globals.css`. Reference them everywhere.
+
+```css
+:root {
+  /* Backgrounds */
+  --bg-base:        #060D1F;   /* night ocean — main app background */
+  --bg-surface:     rgba(255, 255, 255, 0.04);  /* glass card base */
+  --bg-surface-hover: rgba(255, 255, 255, 0.07);
+  --bg-elevated:    rgba(0, 212, 255, 0.05);    /* accent-tinted surface */
+
+  /* Glass layers */
+  --glass-border:   rgba(255, 255, 255, 0.08);
+  --glass-border-accent: rgba(0, 212, 255, 0.20);
+  --glass-blur:     16px;
+  --glass-blur-heavy: 32px;
+
+  /* Text */
+  --text-primary:   #F0F4FF;
+  --text-secondary: rgba(240, 244, 255, 0.55);
+  --text-muted:     rgba(240, 244, 255, 0.30);
+
+  /* Accent — 2SkyMobile Cyan */
+  --accent:         #00D4FF;
+  --accent-dim:     #0099CC;
+  --accent-glow:    rgba(0, 212, 255, 0.25);
+  --accent-glow-strong: rgba(0, 212, 255, 0.45);
+
+  /* Status */
+  --success:        #00E5A0;
+  --warning:        #FFB800;
+  --error:          #FF4560;
+
+  /* Spacing scale (8pt grid) */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+
+  /* Border radius */
+  --radius-sm:  6px;
+  --radius-md:  12px;
+  --radius-lg:  20px;
+  --radius-xl:  32px;
+  --radius-full: 9999px;
+}
+```
+
+---
+
+### Typography System
+
+**Primary font:** `Geist` (via Vercel CDN or Google Fonts fallback)
+**Mono accent:** `Geist Mono` — use for data, metrics, IDs, code snippets
+**Fallback stack:** `system-ui, -apple-system, sans-serif`
+
+**Banned fonts (never use):** Inter, Roboto, Arial, Helvetica, Open Sans, Lato, Montserrat, Poppins, Nunito, Raleway, Space Grotesk, DM Sans, Plus Jakarta Sans
+
+```css
+/* Load in layout.tsx or globals.css */
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap');
+```
+
+**Type scale:**
+
+| Token | Size | Weight | Usage |
+|-------|------|--------|-------|
+| `text-display` | 56–72px | 700–800 | Hero headlines |
+| `text-h1` | 40–48px | 700 | Page titles |
+| `text-h2` | 28–32px | 600 | Section headers |
+| `text-h3` | 20–24px | 600 | Card titles |
+| `text-body` | 16px | 400 | Body copy |
+| `text-small` | 14px | 400 | Labels, captions |
+| `text-micro` | 12px | 500 | Tags, badges |
+| `text-mono` | 13–14px | 400–500 | Metrics, data, IDs |
+
+---
+
+### Glassmorphism Implementation Pattern
+
+This is the core UI element. Use it consistently for all cards, panels, modals, and sidebars.
+
+```tsx
+// Standard glass card — copy this pattern
+<div
+  className="relative rounded-xl border backdrop-blur-md transition-all duration-300"
+  style={{
+    background: 'var(--bg-surface)',
+    borderColor: 'var(--glass-border)',
+    backdropFilter: 'blur(var(--glass-blur))',
+  }}
+>
+  {/* Accent glow on hover — applied via group-hover or JS */}
+  <div
+    className="absolute inset-0 rounded-xl opacity-0 transition-opacity duration-300 pointer-events-none group-hover:opacity-100"
+    style={{ boxShadow: '0 0 30px var(--accent-glow)' }}
+  />
+  {children}
+</div>
+```
+
+**Glass card variants:**
+
+| Variant | Use case | Border |
+|---------|----------|--------|
+| `glass-default` | Standard cards | `--glass-border` |
+| `glass-accent` | Featured / selected state | `--glass-border-accent` |
+| `glass-elevated` | Modals, overlays | `--glass-border` + stronger blur |
+
+---
+
+### Animation Rules
+
+**Rule:** Every section must have at least ONE animation. Static UI is forbidden.
+
+**Performance constraint:** Animations must only use `transform` and `opacity`. Never animate `height`, `width`, `top`, `left`, or `background` directly (triggers layout/paint).
+
+#### Required animations by component type:
+
+| Component | Animation |
+|-----------|-----------|
+| Page load | Staggered entrance: fade-up + opacity, 150ms delay per element |
+| Cards | Scroll reveal via `IntersectionObserver` |
+| Card hover | `translateY(-4px)` + accent glow intensify |
+| Buttons | Scale `1.02` on hover, `0.97` on active |
+| Modals | Scale `0.95→1` + opacity `0→1` on open |
+| Data tables | Row fade-in stagger on mount |
+| Metrics/numbers | Count-up animation on enter viewport |
+| Navigation | Underline slide on active item |
+| Background | Slow gradient drift (60s loop, subtle) |
+
+#### Standard CSS animation tokens:
+
+```css
+/* Paste into globals.css */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes glowPulse {
+  0%, 100% { opacity: 0.4; }
+  50%       { opacity: 0.8; }
+}
+
+@keyframes gradientDrift {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+.animate-fade-up    { animation: fadeUp 0.5s ease forwards; }
+.animate-fade-in    { animation: fadeIn 0.4s ease forwards; }
+.animate-glow-pulse { animation: glowPulse 3s ease-in-out infinite; }
+```
+
+#### Scroll reveal pattern (use in every section):
+
+```tsx
+// hooks/use-scroll-reveal.ts
+import { useEffect, useRef } from 'react'
+
+export function useScrollReveal(threshold = 0.1) {
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          el.style.opacity = '1'
+          el.style.transform = 'translateY(0)'
+          observer.disconnect()
+        }
+      },
+      { threshold }
+    )
+    el.style.opacity = '0'
+    el.style.transform = 'translateY(24px)'
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease'
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [threshold])
+
+  return ref
+}
+```
+
+---
+
+### Component Patterns
+
+#### Button
+
+```tsx
+// Primary CTA
+<button className="relative px-6 py-3 rounded-full font-medium text-sm transition-all duration-200
+  hover:scale-[1.02] active:scale-[0.97]"
+  style={{
+    background: 'linear-gradient(135deg, var(--accent), var(--accent-dim))',
+    color: '#060D1F',
+    boxShadow: '0 0 20px var(--accent-glow)',
+  }}
+>
+  {label}
+</button>
+
+// Secondary ghost
+<button className="px-6 py-3 rounded-full font-medium text-sm border transition-all duration-200
+  hover:scale-[1.02] active:scale-[0.97]"
+  style={{
+    borderColor: 'var(--glass-border-accent)',
+    color: 'var(--accent)',
+    background: 'transparent',
+  }}
+>
+  {label}
+</button>
+```
+
+#### Metric / KPI card
+
+```tsx
+<div className="glass-card group p-6">
+  <p className="text-micro uppercase tracking-widest" style={{ color: 'var(--text-muted)' }}>
+    {label}
+  </p>
+  <p className="text-h1 font-bold mt-2" style={{ color: 'var(--text-primary)', fontFamily: 'Geist Mono' }}>
+    {value}
+  </p>
+  <span className="text-small" style={{ color: trend > 0 ? 'var(--success)' : 'var(--error)' }}>
+    {trend > 0 ? '↑' : '↓'} {Math.abs(trend)}%
+  </span>
+</div>
+```
+
+#### Data badge / tag
+
+```tsx
+<span className="inline-flex items-center px-3 py-1 rounded-full text-micro font-medium"
+  style={{
+    background: 'var(--accent-glow)',
+    color: 'var(--accent)',
+    border: '1px solid var(--glass-border-accent)',
+  }}
+>
+  {label}
+</span>
+```
+
+---
+
+### Layout Rules
+
+* **Grid:** 12-column CSS Grid. Dashboard sidebar: 240px fixed. Content: fluid.
+* **Max content width:** 1280px centered.
+* **Section padding:** `var(--space-16)` vertical, `var(--space-8)` horizontal on mobile.
+* **Card gap:** `var(--space-6)` default, `var(--space-4)` in dense grids.
+* **Z-index scale:** background `0` → content `10` → sticky elements `20` → modals `50` → toasts `100`.
+
+---
+
+### Backgrounds
+
+For hero sections and page backgrounds, use layered gradients — not flat colors.
+
+```css
+/* Page background — standard */
+.bg-app {
+  background:
+    radial-gradient(ellipse 80% 50% at 20% 0%, rgba(0, 212, 255, 0.07) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 80% 100%, rgba(0, 153, 204, 0.05) 0%, transparent 60%),
+    #060D1F;
+}
+
+/* Hero section with depth */
+.bg-hero {
+  background:
+    radial-gradient(ellipse 100% 60% at 50% 0%, rgba(0, 212, 255, 0.12) 0%, transparent 70%),
+    #060D1F;
+}
+```
+
+---
+
+### Design Prohibitions
+
+1. No light mode by default. All UI is dark-first.
+2. No flat white or grey cards without glassmorphism treatment.
+3. No static sections — every block must have scroll reveal or entrance animation.
+4. No generic icon sets used as decoration. Icons are functional only.
+5. No more than 3 font sizes in a single component.
+6. No more than 2 accent colors on a single page (primary + status).
+7. No inline `style` for spacing — use Tailwind scale.
+8. No border-radius below `--radius-sm` (6px) on interactive elements.
+9. No unstructured backgrounds — always use the layered gradient system.
+10. No animations that animate layout properties (`height`, `width`, `margin`, `padding`).
 
 ---
 
@@ -212,6 +561,7 @@ Before building any new feature, answer:
 * Responsive design: mobile-first. Use `sm:`, `md:`, `lg:` breakpoints.
 * Dark mode: use `dark:` variant.
 * Avoid magic pixel values. Use Tailwind spacing scale.
+* All design tokens from the Design System section must be defined as CSS custom properties in `globals.css` — never hardcode hex values in components.
 
 ---
 
@@ -264,6 +614,9 @@ Skills are in `.claude/skills/[name]/SKILL.md`.
 8. No mega-components. 150 line limit. Split proactively.
 9. No duplicate logic. If you write something twice, extract it.
 10. No committing without running: `pnpm lint && pnpm tsc --noEmit`
+11. No hardcoded hex colors in components. Use CSS custom properties from the Design System.
+12. No static UI. Every component must include at least one transition or animation.
+13. No light-mode-first design. Dark is the default.
 
 ---
 

@@ -64,6 +64,12 @@ src/
 
 ---
 
+## Аудит и правила Cursor
+
+В репозитории есть **`.cursorrules`**, каталог **`audit/`** (правила, промпт, история) и команды в **`.cursor/commands/`** (Run audit, Fix all critical, Show rules). Подробности: [`audit/README.md`](audit/README.md).
+
+---
+
 ## Качество и CI
 
 В проекте включены автоматические проверки в GitHub Actions:

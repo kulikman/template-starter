@@ -1,0 +1,12 @@
+# audit/conflicts.log — template-starter
+#
+# When two or more rules in audit/rules.json disagree or cannot both be satisfied,
+# log the resolution here so the next audit stays consistent.
+#
+# Format (one block per conflict):
+# ---
+# date: YYYY-MM-DD
+# rules: [RULE_ID, RULE_ID, ...]
+# chosen: RULE_ID | "custom"
+# rationale: one short paragraph
+# ---
