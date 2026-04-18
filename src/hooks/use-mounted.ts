@@ -1,10 +1,27 @@
-import { useSyncExternalStore } from "react";
+"use client";
 
-const emptySubscribe = (): (() => void) => () => {};
-const getSnapshot = (): boolean => true;
-const getServerSnapshot = (): boolean => false;
+import { useEffect, useState } from "react";
 
-/** Returns true after component mounts. Use to avoid hydration mismatches. */
+/**
+ * Returns `true` after the component has mounted on the client.
+ *
+ * Use to avoid hydration mismatches when rendering something that differs
+ * between SSR and the client (e.g., reading `window`, `localStorage`, or
+ * user theme).
+ *
+ * @example
+ *   const mounted = useMounted()
+ *   if (!mounted) return null
+ *   return <ClientOnlyThing />
+ */
 export function useMounted(): boolean {
-  return useSyncExternalStore(emptySubscribe, getSnapshot, getServerSnapshot);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    queueMicrotask(() => {
+      setMounted(true);
+    });
+  }, []);
+
+  return mounted;
 }

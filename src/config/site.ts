@@ -1,7 +1,6 @@
 export const siteConfig = {
   name: "Template Starter",
-  description:
-    "Universal Next.js + Supabase starter — fork and rename for your product.",
+  description: "Universal Next.js + Supabase starter — fork and rename for your product.",
   url: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
   ogImage: "/og-image.jpg",
   links: {

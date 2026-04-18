@@ -52,6 +52,9 @@ coverage/
 playwright-report/
 test-results/
 
+# Sprint installers (local timestamped backups)
+.sprint-backups/
+
 # Misc
 *.log
 !audit/conflicts.log
