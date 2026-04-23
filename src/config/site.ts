@@ -6,8 +6,5 @@ export const siteConfig = {
   links: {
     github: "https://github.com/kulikman/template-starter",
   },
-  nav: [
-    { title: "Home", href: "/" },
-    { title: "Dashboard", href: "/dashboard" },
-  ],
+  nav: [{ title: "Home", href: "/" }],
 } as const;
