@@ -8,14 +8,31 @@
 
 ## Established Patterns
 
+### Breadcrumbs on Nested Routes
+```tsx
+// src/app/docs/layout.tsx
+import { Breadcrumbs } from "@/components/layout/breadcrumbs"
+
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      <Breadcrumbs className="mb-6" />
+      {children}
+    </div>
+  )
+}
+
+// For dynamic segments, resolve slugs to titles:
+<Breadcrumbs resolveLabel={(seg) => titleMap[seg] ?? null} />
+```
+
 ### Supabase Auth Check (Server)
 ```ts
-// lib/supabase/server.ts
-import { createServerClient } from '@supabase/ssr'
-import { cookies } from 'next/headers'
+// Use the server client, then check auth
+import { createClient } from '@/lib/supabase/server'
 
 export async function getAuthUser() {
-  const supabase = createServerClient(...)
+  const supabase = await createClient()
   const { data: { user }, error } = await supabase.auth.getUser()
   if (error || !user) throw new Error('Unauthorized')
   return user

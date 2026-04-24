@@ -20,11 +20,11 @@
 
 ## Decisions
 
-### [Date] — Initial Setup
+### 2026-04 — Stack Pinning to Next.js 16
 **Context:** Project created from template-starter
-**Decision:** Next.js 14 App Router + Supabase + Tailwind + shadcn/ui + Vercel
-**Alternatives Considered:** Remix (less ecosystem), Prisma (redundant with Supabase types)
-**Consequences:** All data fetching in Server Components by default; Edge Functions for sensitive ops
+**Decision:** Next.js 16 App Router + React 19.2 + Supabase + Tailwind v4 + shadcn/ui v4 + Vercel
+**Alternatives Considered:** Remix (less ecosystem), Prisma (redundant with Supabase types), Next.js 14/15 (EOL path)
+**Consequences:** All data fetching in Server Components by default; `proxy.ts` replaces `middleware.ts`; `"use cache"` for opt-in caching; Edge Functions for sensitive ops
 
 ---
 

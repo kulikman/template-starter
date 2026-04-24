@@ -1,8 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Type-safe <Link href={...}> — opts you into Next's typed routes.
-  typedRoutes: true,
+  // Typed routes require every `Link` href to be a static route union. The
+  // breadcrumb component builds paths at runtime, so keep this off in the template.
+  typedRoutes: false,
 
   // Remote images must be explicitly allowed. Add your CDN / Supabase storage host here.
   images: {

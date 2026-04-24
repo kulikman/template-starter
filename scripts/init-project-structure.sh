@@ -42,7 +42,6 @@ SRC_DIRS=(
   "src/lib/supabase"
   "src/hooks"
   "src/types"
-  "src/styles"
   "src/config"
 )
 
@@ -98,6 +97,7 @@ if [[ -n "$TEMPLATE_ROOT" && -d "$TEMPLATE_ROOT" ]]; then
     "components.json"
     "package.json"
     "pnpm-workspace.yaml"
+    "vitest.config.ts"
   )
 
   for f in "${FILES_TO_COPY[@]}"; do
@@ -129,6 +129,18 @@ if [[ -n "$TEMPLATE_ROOT" && -d "$TEMPLATE_ROOT" ]]; then
   if [[ -d "$TEMPLATE_ROOT/.vscode" ]]; then
     cp -r "$TEMPLATE_ROOT/.vscode/." "$TARGET_DIR/.vscode/"
     echo "  copied: .vscode/"
+  fi
+
+  # Copy public/ (llms.txt, favicons, etc.)
+  if [[ -d "$TEMPLATE_ROOT/public" ]]; then
+    cp -r "$TEMPLATE_ROOT/public/." "$TARGET_DIR/public/"
+    echo "  copied: public/"
+  fi
+
+  # Copy audit/ (rules + prompt)
+  if [[ -d "$TEMPLATE_ROOT/audit" ]]; then
+    cp -r "$TEMPLATE_ROOT/audit/." "$TARGET_DIR/audit/"
+    echo "  copied: audit/"
   fi
 
 else
@@ -171,7 +183,6 @@ touch "$TARGET_DIR/src/lib/supabase/client.ts"
 touch "$TARGET_DIR/src/lib/supabase/server.ts"
 touch "$TARGET_DIR/src/lib/supabase/admin.ts"
 touch "$TARGET_DIR/src/types/index.ts"
-touch "$TARGET_DIR/src/styles/globals.css"
 touch "$TARGET_DIR/src/config/site.ts"
 
 echo ""

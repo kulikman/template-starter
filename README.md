@@ -1,9 +1,8 @@
-# Template Starter
+# Template Starter — 2Sky Labs
 
-Универсальный стартовый репозиторий: Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase, pnpm. Форкните и переименуйте под свой продукт.
+Универсальный стартовый репозиторий: Next.js 16 + React 19 + Supabase + Tailwind v4 + TypeScript + pnpm.
 
-- Шаблон: [github.com/kulikman/template-starter](https://github.com/kulikman/template-starter)
-- Стек: Next.js (App Router), TypeScript, Tailwind CSS, shadcn/ui, Supabase, pnpm
+Форкните → переименуйте → стройте продукт.
 
 ---
 
@@ -12,8 +11,9 @@
 ```bash
 git clone https://github.com/kulikman/template-starter.git my-app
 cd my-app
+bash scripts/post-clone.sh "My Product" "my-product" "https://myproduct.com"
 pnpm install
-cp .env.example .env.local
+cp .env.example .env.local   # заполните ключи Supabase
 pnpm dev
 ```
 
@@ -21,32 +21,20 @@ pnpm dev
 
 ---
 
-## Доступные команды
+## Команды
 
 | Command | Description |
 |---------|-------------|
 | `pnpm dev` | Запуск dev-сервера |
 | `pnpm build` | Production-сборка |
-| `pnpm start` | Запуск production-сборки |
 | `pnpm lint` | ESLint проверка |
-| `pnpm tsc --noEmit` | TypeScript type-check |
-
----
-
-## Переменные окружения
-
-```bash
-# Required
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
-
-# Optional
-NEXT_PUBLIC_SITE_URL=
-NEXT_PUBLIC_APP_NAME=
-```
-
-`SUPABASE_SERVICE_ROLE_KEY` используется только на сервере и не должен попадать в клиентский код.
+| `pnpm typecheck` | TypeScript type-check |
+| `pnpm format:check` | Prettier проверка |
+| `pnpm test` | Vitest unit-тесты |
+| `pnpm test:watch` | Vitest в watch-режиме |
+| `pnpm check` | Lint + typecheck + format (всё сразу) |
+| `pnpm post-clone` | Переименование проекта после форка |
+| `pnpm init:structure` | Scaffold папок в пустой директории |
 
 ---
 
@@ -54,45 +42,83 @@ NEXT_PUBLIC_APP_NAME=
 
 ```text
 src/
-├── app/                # Роуты Next.js App Router
-├── components/         # UI и feature-компоненты
-├── hooks/              # Кастомные React-хуки
-├── lib/                # Утилиты, клиенты, валидация
-├── styles/             # Глобальные стили
-└── types/              # Общие TypeScript-типы
+├── app/                  # Next.js App Router
+│   ├── error.tsx         # Глобальный error boundary
+│   ├── not-found.tsx     # 404 страница
+│   ├── loading.tsx       # Глобальный loading skeleton
+│   ├── sitemap.ts        # Динамический sitemap
+│   └── dashboard/        # Пример вложенного маршрута с breadcrumbs
+├── components/
+│   ├── ui/               # shadcn/ui примитивы
+│   └── layout/           # Header, Breadcrumbs
+├── lib/
+│   ├── supabase/         # Клиенты Supabase (client, server, admin, middleware)
+│   ├── env.ts            # Zod-валидация переменных окружения
+│   ├── validations.ts    # Общие Zod-схемы
+│   ├── utils.ts          # cn() и утилиты
+│   └── constants.ts      # ROUTES и константы
+├── hooks/                # React-хуки
+├── types/                # TypeScript-типы
+├── config/site.ts        # Метаданные сайта и навигация
+└── proxy.ts              # Session refresh + security headers (Next 16)
 ```
+
+Подробная структура и правила: [`CLAUDE.md`](CLAUDE.md).
 
 ---
 
-## Аудит и правила Cursor
+## Переменные окружения
 
-В репозитории есть **`.cursorrules`**, каталог **`audit/`** (правила, промпт, история) и команды в **`.cursor/commands/`** (Run audit, Fix all critical, Show rules). Подробности: [`audit/README.md`](audit/README.md).
+```bash
+# Required
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key   # только сервер
+
+# Optional
+NEXT_PUBLIC_APP_URL=http://localhost:3000
+NEXT_PUBLIC_APP_NAME=MyProduct
+```
+
+Все переменные валидируются Zod-схемой в `src/lib/env.ts` — приложение упадёт на старте, если что-то не так.
+
+---
+
+## AI-агенты
+
+Репозиторий оптимизирован для работы с Claude Code и Cursor:
+
+- **`CLAUDE.md`** — основные правила стека и кода
+- **`AGENTS.md`** — предупреждение для агентов о Next.js 16
+- **`.cursorrules`** — приоритеты для Cursor
+- **`.claude/`** — memory, instincts, skills (architect, review, memory)
+- **`audit/`** — 41 правило аудита, промпт, история
+
+Команды Cursor: `.cursor/commands/` (Run audit, Fix all critical, Show rules).
 
 ---
 
 ## Качество и CI
 
-В проекте включены автоматические проверки в GitHub Actions:
+GitHub Actions при каждом push/PR:
 
-- ESLint
-- TypeScript type-check
-- Security scan
-- Build check
-
-Перед push/PR рекомендуется запускать:
-
-```bash
-pnpm lint && pnpm tsc --noEmit
-```
+- ESLint + TypeScript + Prettier
+- Vitest unit-тесты
+- Gitleaks (сканирование секретов)
+- `pnpm audit` (блокирует HIGH/CRITICAL CVE)
+- Production build
 
 ---
 
 ## Деплой
 
-Типичный деплой — через Vercel из ветки `main` (или вашей production-ветки).
+Push в `main` → Vercel авто-деплой. Убедитесь что переменные окружения настроены в Vercel Dashboard.
 
 ---
 
-## Лицензия
+## SEO
 
-Условия использования определяются владельцем вашего форка / репозитория.
+- `public/robots.txt` — обновите Sitemap URL
+- `public/llms.txt` — заполните информацией о продукте
+- `src/app/sitemap.ts` — добавьте динамические маршруты
+- Metadata через `siteConfig` в `src/config/site.ts`

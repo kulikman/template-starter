@@ -1,0 +1,97 @@
+#!/usr/bin/env bash
+# post-clone.sh — Run after forking template-starter to personalize the project.
+#
+# Usage:
+#   bash scripts/post-clone.sh "My Product" "my-product" "https://myproduct.com"
+#
+# Arguments:
+#   $1 — Display name (e.g. "NeoSIM", "2Sky CRM")
+#   $2 — Package name / slug (e.g. "neosim", "2sky-crm")
+#   $3 — Production URL (e.g. "https://neosim.app")
+
+set -euo pipefail
+
+DISPLAY_NAME="${1:-}"
+SLUG="${2:-}"
+PROD_URL="${3:-}"
+
+if [[ -z "$DISPLAY_NAME" || -z "$SLUG" || -z "$PROD_URL" ]]; then
+  echo "Usage: bash scripts/post-clone.sh \"Display Name\" \"slug\" \"https://url.com\"" >&2
+  exit 1
+fi
+
+echo "→ Personalizing project: $DISPLAY_NAME ($SLUG)"
+
+# ── package.json ─────────────────────────────────────────────────────────────
+if [[ -f package.json ]]; then
+  sed -i.bak "s/\"name\": \"template-starter\"/\"name\": \"$SLUG\"/" package.json
+  rm -f package.json.bak
+  echo "  ✓ package.json name → $SLUG"
+fi
+
+# ── .env.example ─────────────────────────────────────────────────────────────
+if [[ -f .env.example ]]; then
+  sed -i.bak "s|NEXT_PUBLIC_APP_URL=http://localhost:3000|NEXT_PUBLIC_APP_URL=http://localhost:3000|" .env.example
+  sed -i.bak "s|NEXT_PUBLIC_APP_NAME=ProjectName|NEXT_PUBLIC_APP_NAME=$DISPLAY_NAME|" .env.example
+  rm -f .env.example.bak
+  echo "  ✓ .env.example APP_NAME → $DISPLAY_NAME"
+fi
+
+# ── src/config/site.ts ───────────────────────────────────────────────────────
+if [[ -f src/config/site.ts ]]; then
+  sed -i.bak "s|name: \"Template Starter\"|name: \"$DISPLAY_NAME\"|" src/config/site.ts
+  sed -i.bak "s|Universal Next.js + Supabase starter — fork and rename for your product.|$DISPLAY_NAME — powered by Next.js + Supabase.|" src/config/site.ts
+  sed -i.bak "s|https://github.com/kulikman/template-starter|https://github.com/kulikman/$SLUG|" src/config/site.ts
+  rm -f src/config/site.ts.bak
+  echo "  ✓ site.ts name → $DISPLAY_NAME"
+fi
+
+# ── src/app/layout.tsx ───────────────────────────────────────────────────────
+if [[ -f src/app/layout.tsx ]]; then
+  sed -i.bak "s|title: \"Template Starter\"|title: \"$DISPLAY_NAME\"|" src/app/layout.tsx
+  sed -i.bak "s|Next.js App Router, TypeScript, Tailwind, Supabase — clone and customize.|$DISPLAY_NAME|" src/app/layout.tsx
+  rm -f src/app/layout.tsx.bak
+  echo "  ✓ layout.tsx metadata → $DISPLAY_NAME"
+fi
+
+# ── public/robots.txt ────────────────────────────────────────────────────────
+if [[ -f public/robots.txt ]]; then
+  sed -i.bak "s|https://example.com/sitemap.xml|$PROD_URL/sitemap.xml|" public/robots.txt
+  rm -f public/robots.txt.bak
+  echo "  ✓ robots.txt sitemap → $PROD_URL"
+fi
+
+# ── public/llms.txt ──────────────────────────────────────────────────────────
+if [[ -f public/llms.txt ]]; then
+  sed -i.bak "s|# ProjectName|# $DISPLAY_NAME|" public/llms.txt
+  sed -i.bak "s|https://example.com|$PROD_URL|" public/llms.txt
+  rm -f public/llms.txt.bak
+  echo "  ✓ llms.txt → $DISPLAY_NAME"
+fi
+
+# ── src/lib/constants.ts ─────────────────────────────────────────────────────
+if [[ -f src/lib/constants.ts ]]; then
+  sed -i.bak "s|\"Template Starter\"|\"$DISPLAY_NAME\"|" src/lib/constants.ts
+  rm -f src/lib/constants.ts.bak
+  echo "  ✓ constants.ts APP_NAME fallback → $DISPLAY_NAME"
+fi
+
+# ── Clean up git for fresh start ─────────────────────────────────────────────
+if [[ -d .git ]]; then
+  rm -rf .git
+  git init
+  git add .
+  git commit -m "chore: initialize $DISPLAY_NAME from template-starter"
+  echo "  ✓ Fresh git history"
+fi
+
+echo ""
+echo "✅ Project personalized: $DISPLAY_NAME"
+echo ""
+echo "Next steps:"
+echo "  1. cp .env.example .env.local && fill in Supabase keys"
+echo "  2. pnpm install"
+echo "  3. pnpm dev"
+echo "  4. Update public/llms.txt with product description"
+echo "  5. Update public/robots.txt Sitemap URL if different"
+echo ""

@@ -18,18 +18,33 @@
 
 ## Current Session
 
-**Last Updated:** 2026-04-12
+**Last Updated:** 2026-04-24
 **Project:** template-starter (fork → rename under your product)
-**Current Feature:** Система аудита Cursor + документация под шаблон
+**Current Feature:** Breadcrumbs, URL hierarchy, test setup, llms.txt, audit rules
 **Status:** `done`
 
 ### What Was Done Last Session
-- [x] Добавлены `audit/*`, `.cursorrules`, `.cursor/commands/*`, ссылки в README и CLAUDE.md
-- [x] Выровнены пути и тексты под `src/app/` и `template-starter`
+- [x] Added `<Breadcrumbs />` component (`src/components/layout/breadcrumbs.tsx`)
+- [x] Added URL Hierarchy & Breadcrumbs section to CLAUDE.md
+- [x] Added breadcrumbs pattern to instincts.md and patterns.md
+- [x] Added `vitest` + tests (`utils.test.ts`, `env.test.ts`) + CI test job
+- [x] Added `public/llms.txt` and `public/robots.txt`
+- [x] Added `src/app/sitemap.ts` dynamic sitemap generator
+- [x] Added `src/app/error.tsx`, `not-found.tsx`, `loading.tsx` error boundaries
+- [x] Added `src/lib/env.ts` Zod env validation (server + client schemas)
+- [x] Upgraded `layout.tsx` metadata: title.template, OG tags, Twitter cards via siteConfig
+- [x] Added `scripts/post-clone.sh` for project personalization after fork
+- [x] Added UX-001, UX-002, SEO-001/002/003, ERR-001/002, ENV-001 audit rules (41 total)
+- [x] Fixed decisions.md "Next.js 14" → "Next.js 16"
+- [x] Fixed init script: removed `src/styles/`, added public/ and audit/ copies
+- [x] Added error handling + SEO instincts to instincts.md
+- [x] Expanded ROUTES constant with hierarchy pattern + JSDoc
 
 ### Next Steps
 1. Подключить Supabase / `.env.local` при старте продукта
-2. Запускать периодический аудит командой Run audit по мере роста кода
+2. Запустить `pnpm post-clone "ProductName" "product-slug" "https://product.com"`
+3. Заполнить `public/llms.txt` актуальными данными продукта
+4. Подключить Sentry в `error.tsx` при продакшн-деплое
 
 ### Open Questions / Blockers
 - [ ] [question or blocker]

@@ -26,6 +26,22 @@ Shared across entire app    → components/ui/ or components/layout/
 
 ---
 
+## URL Hierarchy & Navigation
+
+### Every route must be navigable at every depth
+- Creating `/settings/billing/invoices` means `/settings/billing` and `/settings`
+  are also real pages. No dead intermediate URLs.
+- Use descriptive nouns: `/projects/[id]`, not `/p/[id]`.
+- Route groups `(dashboard)` are for layout, not for URL structure.
+
+### Breadcrumbs are mandatory on nested pages
+- Every layout.tsx inside a nested route includes `<Breadcrumbs />`.
+- Dynamic slugs → pass `resolveLabel` to show a human title.
+- Update `SEGMENT_LABELS` in `breadcrumbs.tsx` for new static routes.
+- Update `ROUTES` in `constants.ts` when adding routes.
+
+---
+
 ## Data Fetching Architecture
 
 ### Server vs Client fetching
@@ -120,7 +136,7 @@ Form state                       → react-hook-form + Zod
 - Images → next/image with `width` and `height`
 - Fonts → next/font (never `<link>` tag)
 - Heavy components → dynamic import with `next/dynamic`
-- External data → cache with `revalidate` or `cache: 'force-cache'`
+- External data → use `"use cache"` directive for opt-in caching (Next 16 pattern)
 
 ### When to optimize
 - Only optimize after measuring — not by intuition
@@ -140,6 +156,42 @@ Form state                       → react-hook-form + Zod
 - `"use client"` components that import from `lib/supabase/admin.ts` → NEVER
 - API routes without `supabase.auth.getUser()` check → ALWAYS add it
 - CORS headers set to `*` on sensitive routes → lock down to specific origins
+- Raw `process.env` without going through `src/lib/env.ts` → use `getServerEnv()` / `getClientEnv()`
+
+---
+
+## Error Handling Instincts
+
+### Non-negotiable
+- `src/app/error.tsx` exists globally. If a route group (e.g. `(dashboard)`)
+  has distinct error UX, add a local `error.tsx` there too.
+- `src/app/not-found.tsx` exists with navigation back to home.
+- Error boundaries always provide `reset()` retry.
+
+### When to add a local error/loading boundary
+- Route group has its own layout (sidebar, nav) → local `error.tsx` + `loading.tsx`
+- A page makes a heavy data fetch → local `loading.tsx` with content skeleton
+- Default: global boundaries are fine for simple pages
+
+### Error tracking
+- Default: `console.error` in `error.tsx`.
+- Production: replace with Sentry, LogRocket, or your tracker.
+- Always include `error.digest` in user-facing UI for support tickets.
+
+---
+
+## SEO & Metadata Instincts
+
+### Non-negotiable
+- Root layout uses `title.template` from `siteConfig` so child pages only set `title`.
+- Dynamic pages (`[slug]`) implement `generateMetadata()`.
+- `public/robots.txt` and `src/app/sitemap.ts` are kept in sync with routes.
+- `public/llms.txt` is filled with product info, not template placeholders.
+
+### When to add metadata
+- Every public-facing page has `title` + `description`.
+- Blog posts / docs add OG image via `generateMetadata()`.
+- Dashboard pages behind auth → minimal metadata, no OG.
 
 ---
 
