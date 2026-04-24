@@ -116,23 +116,28 @@ src/
 │   ├── (auth)/           # Auth routes (login, signup)
 │   ├── (dashboard)/      # Protected routes
 │   ├── api/              # Route Handlers
-│   ├── layout.tsx        # Root layout
+│   ├── layout.tsx        # Root layout (siteConfig-driven metadata)
 │   ├── page.tsx          # Landing page
+│   ├── error.tsx         # Global error boundary
+│   ├── not-found.tsx     # Global 404 page
+│   ├── loading.tsx       # Global loading skeleton
+│   ├── sitemap.ts        # Dynamic sitemap generator
 │   └── globals.css       # Tailwind v4 + theme tokens (ONLY globals.css file)
 ├── components/
 │   ├── ui/               # shadcn primitives (button, input, card...)
 │   ├── forms/            # Form components
-│   ├── layout/           # Header, Footer, Sidebar, Navigation
+│   ├── layout/           # Header, Footer, Sidebar, Breadcrumbs
 │   └── [feature]/        # Feature-specific components
 ├── lib/
 │   ├── supabase/
 │   │   ├── client.ts     # Browser Supabase client
 │   │   ├── server.ts     # Server Supabase client (cookies-aware)
 │   │   ├── admin.ts      # Service role client (server only, never in client bundle)
-│   │   └── middleware.ts # Session-refresh helper called from src/proxy.ts
+│   │   └── middleware.ts  # Session-refresh helper called from src/proxy.ts
+│   ├── env.ts            # Zod-validated environment variables
 │   ├── utils.ts          # cn() and general utilities
-│   ├── constants.ts      # App-wide constants
-│   └── validations.ts    # Zod schemas
+│   ├── constants.ts      # App-wide constants + ROUTES map
+│   └── validations.ts    # Zod schemas for forms / API bodies
 ├── hooks/                # Custom React hooks
 ├── types/                # TypeScript types
 │   ├── database.ts       # Supabase generated types (regenerate on schema change)
@@ -143,6 +148,55 @@ src/
 ```
 
 > Note: `src/styles/` does **not** exist. All global CSS lives in `src/app/globals.css`.
+
+---
+
+## URL Hierarchy & Breadcrumbs
+
+Every page with a path deeper than `/` **must** have breadcrumb navigation.
+URLs must reflect a logical hierarchy that users can navigate by truncating
+segments. This is both a UX and an SEO requirement.
+
+### Rules
+
+1. **URLs are hierarchical.** `/docs/getting-started` means `/docs` is a valid,
+   navigable page. Never create a deep route without a parent index page.
+2. **Every layout in a nested route** includes `<Breadcrumbs />` from
+   `@/components/layout/breadcrumbs`. Place it above the main content.
+3. **Dynamic segments** (e.g. `/docs/[slug]`) must pass a `resolveLabel` prop
+   to map the slug to a human-readable title:
+   ```tsx
+   <Breadcrumbs resolveLabel={(seg) => doc?.title ?? seg} />
+   ```
+4. **Route groups** like `(dashboard)` or `(auth)` are invisible in the URL
+   and are automatically stripped from breadcrumbs.
+5. **`SEGMENT_LABELS`** in `src/components/layout/breadcrumbs.tsx` must be
+   updated when adding a new static route. If the segment is not in the map
+   and no `resolveLabel` is provided, the raw segment is title-cased
+   (`getting-started` → `Getting Started`).
+
+### Pattern: Nested layout with breadcrumbs
+
+```tsx
+// src/app/docs/layout.tsx
+import { Breadcrumbs } from "@/components/layout/breadcrumbs"
+
+export default function DocsLayout({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="mx-auto max-w-4xl px-4 py-8">
+      <Breadcrumbs className="mb-6" />
+      {children}
+    </div>
+  )
+}
+```
+
+### Anti-patterns
+
+- ❌ Creating `/settings/billing/invoices/[id]` without `/settings/billing/invoices` index
+- ❌ Pages deeper than `/` without `<Breadcrumbs />`
+- ❌ Using non-descriptive slugs as route segments (`/p/123` instead of `/projects/123`)
+- ❌ Flat URL structures that don't reflect content hierarchy (`/invoice-detail` instead of `/invoices/[id]`)
 
 ---
 
@@ -227,6 +281,57 @@ Absolute imports via `@/` prefix. Group in this order:
 
 ---
 
+## Environment Variables
+
+- All env vars are validated with Zod at startup via `src/lib/env.ts`.
+- **Add new env vars** in three places: `.env.example`, `src/lib/env.ts` (schema),
+  and the relevant CI workflow env block.
+- Use `getServerEnv()` in server code and `getClientEnv()` in client code instead
+  of raw `process.env` — this gives type safety and fails fast on misconfiguration.
+- Never commit `.env.local`. The `.gitignore` already blocks it.
+
+---
+
+## Error Handling & Boundaries
+
+Three files provide the global error safety net:
+
+- `src/app/error.tsx` — catches unhandled runtime errors. Wired to `console.error`
+  by default; replace with `Sentry.captureException(error)` when you add error
+  tracking.
+- `src/app/not-found.tsx` — renders for any unmatched route (404).
+- `src/app/loading.tsx` — global loading skeleton during navigation.
+
+### Rules
+
+- Every route group layout **may** have its own `error.tsx` and `loading.tsx`
+  for more granular feedback.
+- Never swallow errors silently. If you catch, either re-throw or report.
+- Error boundaries must provide a way to retry (`reset()` callback).
+- The `error.digest` field is a server-side hash — safe to show to users for
+  support requests, but never expose the full stack trace.
+
+---
+
+## SEO & Metadata
+
+- Root `layout.tsx` uses `title.template` from `siteConfig` — child pages only
+  need to set `title` (e.g. `"Dashboard"` renders as `"Dashboard — ProductName"`).
+- Use `generateMetadata()` for dynamic pages (blog posts, docs):
+  ```tsx
+  export async function generateMetadata({ params }: Props): Promise<Metadata> {
+    const { slug } = await params
+    const doc = await getDoc(slug)
+    return { title: doc.title, description: doc.excerpt }
+  }
+  ```
+- `public/robots.txt` — update `Sitemap:` URL after deploying.
+- `public/llms.txt` — fill with product info for AI indexing.
+- `src/app/sitemap.ts` — add dynamic routes as your product grows.
+- Always set `width` and `height` on OG images (default: 1200×630).
+
+---
+
 ## Styling Rules (Tailwind v4)
 
 - Tailwind only. No inline styles. No CSS Modules (exceptional cases only).
@@ -247,7 +352,8 @@ Absolute imports via `@/` prefix. Group in this order:
 
 1. No `any`. Use `unknown` and narrow.
 2. No `console.log` in production paths. Use `console.warn` / `console.error` or a logger.
-3. No hardcoded secrets. All keys live in `.env.local` and are read via `process.env`.
+3. No hardcoded secrets. All keys live in `.env.local` and are accessed via
+   `getServerEnv()` / `getClientEnv()` from `@/lib/env.ts` — not raw `process.env`.
 4. No direct DOM manipulation. Use React state/refs.
 5. No default exports (except Next.js pages/layouts/error boundaries that require them,
    and `proxy.ts` default export).
@@ -290,6 +396,8 @@ Before completing any task, verify:
 - [ ] TypeScript compiles (`pnpm tsc --noEmit`)
 - [ ] ESLint passes (`pnpm lint`)
 - [ ] Prettier clean (`pnpm format:check`)
+- [ ] Tests pass (`pnpm test`)
+- [ ] Breadcrumbs present on nested routes
 - [ ] No hardcoded values (URLs, keys, magic numbers)
 - [ ] Error states handled in UI (loading, error, empty)
 - [ ] Mobile responsiveness checked

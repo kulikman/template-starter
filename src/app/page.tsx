@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 export default function Home() {
   return (
     <div className="flex flex-1 items-center justify-center bg-zinc-50 px-6 py-16 font-sans dark:bg-black">
@@ -17,12 +19,12 @@ export default function Home() {
             , and build your product — this template stays product-agnostic.
           </p>
           <div className="flex flex-col gap-3 sm:flex-row">
-            <a
+            <Link
               href="/dashboard"
               className="inline-flex h-11 items-center justify-center rounded-full bg-zinc-900 px-6 text-sm font-medium text-white transition hover:bg-zinc-700 dark:bg-zinc-100 dark:text-black dark:hover:bg-zinc-300"
             >
               Open dashboard
-            </a>
+            </Link>
             <a
               href="https://github.com/kulikman/template-starter"
               target="_blank"

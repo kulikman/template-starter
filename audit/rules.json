@@ -2,7 +2,7 @@
   "meta": {
     "version": "1.0.0",
     "source": "template-starter",
-    "ruleCount": 33,
+    "ruleCount": 41,
     "lastReviewed": null
   },
   "rules": [
@@ -301,6 +301,78 @@
       "category": "security",
       "description": "Сбор и хранение PIPL/GDPR-чувствительных полей оправданы и документированы.",
       "verify": "Схема БД и формы.",
+      "autoFixable": false
+    },
+    {
+      "id": "UX-001",
+      "title": "Breadcrumbs на вложенных маршрутах",
+      "severity": "HIGH",
+      "category": "ux",
+      "description": "Страницы глубже / должны содержать <Breadcrumbs /> из @/components/layout/breadcrumbs. URL должны отражать иерархию контента.",
+      "verify": "Все layout.tsx внутри вложенных маршрутов импортируют и рендерят Breadcrumbs. Каждый сегмент URL имеет свою index-страницу.",
+      "autoFixable": false
+    },
+    {
+      "id": "UX-002",
+      "title": "URL иерархия: каждый сегмент навигируем",
+      "severity": "MEDIUM",
+      "category": "ux",
+      "description": "Если существует /a/b/c, то /a/b и /a тоже должны быть валидными страницами. Нет \"мёртвых\" промежуточных URL.",
+      "verify": "Проверить что для каждого вложенного маршрута существует page.tsx на каждом уровне вложенности.",
+      "autoFixable": false
+    },
+    {
+      "id": "SEO-001",
+      "title": "llms.txt на месте",
+      "severity": "LOW",
+      "category": "seo",
+      "description": "Файл public/llms.txt существует и заполнен актуальной информацией о продукте для AI-индексации.",
+      "verify": "Файл public/llms.txt не является шаблоном-заглушкой.",
+      "autoFixable": false
+    },
+    {
+      "id": "ERR-001",
+      "title": "Error boundary на каждом route group",
+      "severity": "HIGH",
+      "category": "ux",
+      "description": "Глобальный error.tsx существует. Route groups с пользовательскими данными имеют свой error.tsx.",
+      "verify": "src/app/error.tsx существует и содержит кнопку reset(). Вложенные route groups проверены.",
+      "autoFixable": false
+    },
+    {
+      "id": "ERR-002",
+      "title": "404 страница информативна",
+      "severity": "MEDIUM",
+      "category": "ux",
+      "description": "not-found.tsx существует, содержит навигацию обратно на главную и не выдаёт стандартный Next.js 404.",
+      "verify": "src/app/not-found.tsx существует и содержит Link на /.",
+      "autoFixable": false
+    },
+    {
+      "id": "ENV-001",
+      "title": "Env vars валидируются Zod",
+      "severity": "HIGH",
+      "category": "security",
+      "description": "Все переменные окружения проходят через Zod-схему из src/lib/env.ts. Приложение падает при запуске, а не в рантайме.",
+      "verify": "src/lib/env.ts содержит serverSchema и clientSchema. Новые env vars добавлены в обе схемы и .env.example.",
+      "autoFixable": false
+    },
+    {
+      "id": "SEO-002",
+      "title": "Metadata через siteConfig",
+      "severity": "MEDIUM",
+      "category": "seo",
+      "description": "Root layout использует title.template из siteConfig. Динамические страницы используют generateMetadata().",
+      "verify": "layout.tsx импортирует siteConfig. Страницы с [slug] реализуют generateMetadata.",
+      "autoFixable": false
+    },
+    {
+      "id": "SEO-003",
+      "title": "robots.txt и sitemap.ts",
+      "severity": "LOW",
+      "category": "seo",
+      "description": "public/robots.txt существует с правильным Sitemap URL. src/app/sitemap.ts генерирует актуальную карту сайта.",
+      "verify": "Файлы существуют. Sitemap URL соответствует NEXT_PUBLIC_APP_URL.",
       "autoFixable": false
     }
   ]
