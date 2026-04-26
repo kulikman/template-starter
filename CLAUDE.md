@@ -407,6 +407,24 @@ Before completing any task, verify:
 
 ---
 
+## El Aurion Agents
+
+Проект использует систему специализированных агентов. Подробности: `.claude/agents/README.md`.
+
+Быстрый старт:
+```
+/project:agent orchestrator "сложная задача с несколькими шагами"
+/project:agent coder "написать или изменить код"
+/project:agent reviewer "проверить код перед merge"
+/project:agent architect "спроектировать схему или API"
+/project:agent tester "написать тесты"
+/project:agent security "аудит безопасности"
+```
+
+Правила разбиты по файлам в `.claude/rules/` — агенты читают только нужные им файлы.
+
+---
+
 ## Context & Memory
 
 When working on a task:
@@ -415,11 +433,11 @@ When working on a task:
 3. Suggest refactors as separate steps, not mixed into feature commits.
 
 When starting a new feature:
-1. Read `.claude/memory/project-state.md` for session context.
-2. Read `.claude/instincts.md` for architecture decisions.
-3. Ask clarifying questions if requirements are ambiguous.
-4. Propose the plan before writing code.
-5. Break large features into small reviewable chunks.
+1. Read `.claude/memory/context.md` for session context.
+2. Read `.claude/memory/mistakes.md` — not to repeat past errors.
+3. Read `.claude/rules/` relevant to your task.
+4. Ask clarifying questions if requirements are ambiguous.
+5. Propose the plan before writing code.
 
 ---
 

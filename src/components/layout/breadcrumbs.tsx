@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
-import type { Route } from "next";
 
 import { cn } from "@/lib/utils";
 
@@ -77,14 +76,15 @@ export function Breadcrumbs({
     // Build the href from all segments up to and including this one,
     // but use the original `segments` array to preserve the real URL path
     const href = "/" + segments.slice(0, segments.indexOf(segment) + 1).join("/");
-    const typedHref = href as Route;
 
     const label =
-      SEGMENT_LABELS[segment] ?? resolveLabel?.(segment, visibleSegments) ?? formatSegment(segment);
+      SEGMENT_LABELS[segment] ??
+      resolveLabel?.(segment, visibleSegments) ??
+      formatSegment(segment);
 
     const isLast = index === visibleSegments.length - 1;
 
-    return { href: typedHref, key: href, label, isLast };
+    return { href, label, isLast };
   });
 
   return (
@@ -94,12 +94,15 @@ export function Breadcrumbs({
     >
       <ol className="flex items-center gap-1.5">
         <li>
-          <Link href="/" className="hover:text-foreground transition-colors">
+          <Link
+            href="/"
+            className="hover:text-foreground transition-colors"
+          >
             {homeLabel}
           </Link>
         </li>
-        {crumbs.map(({ href, key, label, isLast }) => (
-          <Fragment key={key}>
+        {crumbs.map(({ href, label, isLast }) => (
+          <Fragment key={href}>
             <li aria-hidden="true" className="text-muted-foreground/40 select-none">
               /
             </li>
@@ -109,7 +112,10 @@ export function Breadcrumbs({
                   {label}
                 </span>
               ) : (
-                <Link href={href} className="hover:text-foreground transition-colors">
+                <Link
+                  href={href}
+                  className="hover:text-foreground transition-colors"
+                >
                   {label}
                 </Link>
               )}
@@ -127,5 +133,7 @@ export function Breadcrumbs({
  * UUIDs are left as-is (they should be resolved via `resolveLabel`).
  */
 function formatSegment(segment: string): string {
-  return segment.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
+  return segment
+    .replace(/-/g, " ")
+    .replace(/\b\w/g, (char) => char.toUpperCase());
 }

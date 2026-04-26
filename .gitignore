@@ -55,6 +55,9 @@ test-results/
 # Sprint installers (local timestamped backups)
 .sprint-backups/
 
+# Claude Code local settings (personal overrides)
+.claude/settings.local.json
+
 # Misc
 *.log
 !audit/conflicts.log

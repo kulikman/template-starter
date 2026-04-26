@@ -18,7 +18,9 @@ const serverSchema = z.object({
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NEXT_PUBLIC_APP_NAME: z.string().default("Template Starter"),
-  NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NODE_ENV: z
+    .enum(["development", "production", "test"])
+    .default("development"),
 
   // Analytics (optional)
   NEXT_PUBLIC_GA_MEASUREMENT_ID: z.string().optional(),
@@ -96,7 +98,8 @@ export function getClientEnv(): ClientEnv {
     NEXT_PUBLIC_APP_NAME: process.env.NEXT_PUBLIC_APP_NAME,
     NEXT_PUBLIC_GA_MEASUREMENT_ID: process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID,
     NEXT_PUBLIC_GTM_ID: process.env.NEXT_PUBLIC_GTM_ID,
-    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY: process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
+    NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY:
+      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY,
   });
 
   if (!result.success) {
