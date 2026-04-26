@@ -78,9 +78,7 @@ export function Breadcrumbs({
     const href = "/" + segments.slice(0, segments.indexOf(segment) + 1).join("/");
 
     const label =
-      SEGMENT_LABELS[segment] ??
-      resolveLabel?.(segment, visibleSegments) ??
-      formatSegment(segment);
+      SEGMENT_LABELS[segment] ?? resolveLabel?.(segment, visibleSegments) ?? formatSegment(segment);
 
     const isLast = index === visibleSegments.length - 1;
 
@@ -94,10 +92,7 @@ export function Breadcrumbs({
     >
       <ol className="flex items-center gap-1.5">
         <li>
-          <Link
-            href="/"
-            className="hover:text-foreground transition-colors"
-          >
+          <Link href="/" className="hover:text-foreground transition-colors">
             {homeLabel}
           </Link>
         </li>
@@ -112,10 +107,7 @@ export function Breadcrumbs({
                   {label}
                 </span>
               ) : (
-                <Link
-                  href={href}
-                  className="hover:text-foreground transition-colors"
-                >
+                <Link href={href} className="hover:text-foreground transition-colors">
                   {label}
                 </Link>
               )}
@@ -133,7 +125,5 @@ export function Breadcrumbs({
  * UUIDs are left as-is (they should be resolved via `resolveLabel`).
  */
 function formatSegment(segment: string): string {
-  return segment
-    .replace(/-/g, " ")
-    .replace(/\b\w/g, (char) => char.toUpperCase());
+  return segment.replace(/-/g, " ").replace(/\b\w/g, (char) => char.toUpperCase());
 }
