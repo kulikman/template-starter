@@ -1,0 +1,26 @@
+# Cursor — template-starter
+
+Репозиторий: **template-starter** (Next.js App Router, `src/app/`). Не смешивай с проектами вне этого дерева без явного запроса.
+
+## Приоритет инструкций
+
+1. `CLAUDE.md` — основной гайд по стеку, стилю и процессу.
+2. `.claude/memory/project-state.md` — контекст сессии (прочитай в начале задачи).
+3. `audit/rules.json` — база правил аудита (безопасность, архитектура, качество).
+
+## Система аудита
+
+- Правила: `audit/rules.json`
+- Промпт для полного прогона: `audit/AUDIT_PROMPT.md`
+- История запусков: `audit/audit-history.json` (агент дописывает записи после аудита)
+- Конфликты правил: `audit/conflicts.log` (логируй разрешения, если правила противоречат друг другу)
+
+При команде **Run audit** следуй `audit/AUDIT_PROMPT.md`, обновляй историю; изменения в `rules.json` — только осмысленные и без дубликатов id.
+
+При команде **Fix all critical** исправь в коде все нарушения с `severity: CRITICAL` из актуального `audit/rules.json`, затем проверь `pnpm lint` и `pnpm tsc --noEmit`.
+
+При команде **Show rules** выведи краткую сводку: количество правил, список id с severity и category из `audit/rules.json`.
+
+## Команды Cursor
+
+См. `.cursor/commands/` — `run-audit.md`, `fix-all-critical.md`, `show-rules.md`.
