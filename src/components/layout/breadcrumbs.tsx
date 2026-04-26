@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Fragment } from "react";
+import type { Route } from "next";
 
 import { cn } from "@/lib/utils";
 
@@ -76,13 +77,14 @@ export function Breadcrumbs({
     // Build the href from all segments up to and including this one,
     // but use the original `segments` array to preserve the real URL path
     const href = "/" + segments.slice(0, segments.indexOf(segment) + 1).join("/");
+    const typedHref = href as Route;
 
     const label =
       SEGMENT_LABELS[segment] ?? resolveLabel?.(segment, visibleSegments) ?? formatSegment(segment);
 
     const isLast = index === visibleSegments.length - 1;
 
-    return { href, label, isLast };
+    return { href: typedHref, key: href, label, isLast };
   });
 
   return (
@@ -96,8 +98,8 @@ export function Breadcrumbs({
             {homeLabel}
           </Link>
         </li>
-        {crumbs.map(({ href, label, isLast }) => (
-          <Fragment key={href}>
+        {crumbs.map(({ href, key, label, isLast }) => (
+          <Fragment key={key}>
             <li aria-hidden="true" className="text-muted-foreground/40 select-none">
               /
             </li>
