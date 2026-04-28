@@ -153,7 +153,7 @@ src/
 
 ## URL Hierarchy & Breadcrumbs
 
-Every page with a path deeper than `/` **must** have breadcrumb navigation.
+Every page with a path deeper than the first level (e.g. `/companies/[id]`) **must** have breadcrumb navigation.
 URLs must reflect a logical hierarchy that users can navigate by truncating
 segments. This is both a UX and an SEO requirement.
 
@@ -161,8 +161,11 @@ segments. This is both a UX and an SEO requirement.
 
 1. **URLs are hierarchical.** `/docs/getting-started` means `/docs` is a valid,
    navigable page. Never create a deep route without a parent index page.
-2. **Every layout in a nested route** includes `<Breadcrumbs />` from
-   `@/components/layout/breadcrumbs`. Place it above the main content.
+2. **Detail / edit / create pages** must render `<Breadcrumbs />` from
+   `@/components/layout/breadcrumbs` as the **first content element** (above the page title).
+   - First breadcrumb is always **Dashboard** → `/dashboard`
+   - Last breadcrumb is the current page (no link, bold)
+   - Do **not** render breadcrumbs on `/dashboard`, `/settings*`, or first-level list pages (e.g. `/companies`)
 3. **Dynamic segments** (e.g. `/docs/[slug]`) must pass a `resolveLabel` prop
    to map the slug to a human-readable title:
    ```tsx

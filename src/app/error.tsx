@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -28,15 +29,13 @@ export default function GlobalError({
   return (
     <div className="flex flex-1 items-center justify-center px-6 py-24">
       <div className="text-center">
-        <p className="text-destructive text-sm font-semibold uppercase tracking-wider">
-          Error
-        </p>
+        <p className="text-destructive text-sm font-semibold tracking-wider uppercase">Error</p>
         <h1 className="text-foreground mt-2 text-3xl font-semibold tracking-tight sm:text-4xl">
           Something went wrong
         </h1>
         <p className="text-muted-foreground mt-4 max-w-md text-base leading-7">
-          An unexpected error occurred. Our team has been notified. You can try
-          again or go back to the home page.
+          An unexpected error occurred. Our team has been notified. You can try again or go back to
+          the home page.
         </p>
         {error.digest && (
           <p className="text-muted-foreground/60 mt-2 font-mono text-xs">
@@ -48,7 +47,7 @@ export default function GlobalError({
             Try again
           </Button>
           <Button variant="outline" asChild>
-            <a href="/">Back to home</a>
+            <Link href="/">Back to home</Link>
           </Button>
         </div>
       </div>

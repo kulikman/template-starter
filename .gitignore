@@ -57,6 +57,10 @@ test-results/
 
 # Claude Code local settings (personal overrides)
 .claude/settings.local.json
+.claude/launch.json
+
+# Local notes (do not commit)
+hetzner_setup.md
 
 # Misc
 *.log
