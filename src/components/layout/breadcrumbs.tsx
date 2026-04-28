@@ -82,7 +82,7 @@ export function Breadcrumbs({
                   {label}
                 </span>
               ) : (
-                <Link href={href} className="hover:text-foreground transition-colors">
+                <Link href={{ pathname: href }} className="hover:text-foreground transition-colors">
                   {label}
                 </Link>
               )}
